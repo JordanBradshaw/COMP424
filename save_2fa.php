@@ -72,7 +72,6 @@ $stmt = mysqli_stmt_init($conn);
 			$(document).on('click', '.btn-submit', function(ev){
 				if($("#2fa-form").valid() == true){
 					var data = $("#2fa-form").serialize();
-					var_dump($data);
 					$.post('check_user.php', data, function(data,status){
 						console.log("Submitting result ====> Data: " + data + "\nStatus: " + status);
 						if( data == "Saved 2FA Success"){

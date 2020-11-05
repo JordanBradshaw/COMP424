@@ -174,7 +174,7 @@
 				$.post('check_user.php', data, function(data,status){
 					console.log("Submitting Result => Data: " + data + "\nStatus: " + status);
 					if( data == "done"){
-						window.location = 'user_confirm.php';
+						window.location = 'verify_2fa.php';
 					}
 					else{
 						alert("not done");

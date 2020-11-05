@@ -33,14 +33,11 @@ $stmt = mysqli_stmt_init($conn);
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	</head>
 	<body>
-		<div id="container">
-			<h1>2-Step Verification using Google Authenticator</h1>
-			<div id='device'>
-
-			<p>Scan with Google Authenticator application on your smart phone.</p>
-			<div id="img"><img src='<?php echo $google_QR_Code; ?>' /></div>
-
-			<form id="LI-form">
+	<div class="container" style="margin-top:5%;background-color:lightblue;max-width:500px;">
+		<div class="row-fluid">
+			<div class="col-md-auto" style="max-width:500px;margin:auto;">
+			<p>Verify with Google Authenticator application associated with your account on your smart phone.</p>
+			<form id="verify2fa-form">
 			<input type="hidden" id="process_name" name="process_name" value="verify_code" />
 				<div class="form-group">
 					<label for="email">Place your code here:</label>
@@ -53,23 +50,21 @@ $stmt = mysqli_stmt_init($conn);
 			<div style="text-align:center">
 				<h6>Download Google Authenticator <br/> application using this link(s),</h6>
 			<a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8" target="_blank"><img class='app' src="images/iphone.png" /></a>
-
 			<a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en" target="_blank"><img class="app" src="images/android.png" /></a>
 			</div>
 		</div>
-		
-	<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.validate.min.js"></script>-->
+	</div>
 	<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.js"></script>
 	<script>
 		$(document).ready(function(){
 			/* submit form details */
 			$(document).on('click', '.btn-submit', function(ev){
-				if($("#LI-form").valid() == true){
-					var data = $("#LI-form").serialize();
+				if($("#verify2fa-form").valid() == true){
+					var data = $("#verify2fa-form").serialize();
 					$.post('check_user.php', data, function(data,status){
-						console.log("submitnig result ====> Data: " + data + "\nStatus: " + status);
-						if( data == "done"){
-							window.location = 'my_page.php';
+						console.log("Submitting result ====> Data: " + data + "\nStatus: " + status);
+						if( data == "Verify 2FA Success"){
+							window.location = 'logged_in.php';
 						}
 						else{
 							alert("not done2222");
@@ -78,7 +73,6 @@ $stmt = mysqli_stmt_init($conn);
 					});
 				}
 			});
-			/* ebd submit form details */
 		});
 	</script>
 	</body>

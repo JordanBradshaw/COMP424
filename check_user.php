@@ -92,7 +92,7 @@ if($process_name == "verify_code"){
         	$checkResult = $gauth->verifyCode($secret_key, $scan_code, 2);    // 2 = 2*30sec clock tolerance
         if ($checkResult){
                 $_SESSION['googleVerifyCode'] = $scan_code;
-                echo "done";
+                echo "Verify 2FA Success";
         }
         else{
                 echo 'Note : Code not matched.';
