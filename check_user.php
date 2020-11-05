@@ -118,9 +118,9 @@ if($process_name == "save_code"){
         $secret_key     = $user_row['google_auth_code'];
         $checkResult = $gauth->verifyCode($secret_key, $scan_code, 2);    // 2 = 2*30sec clock tolerance
         if ($checkResult){
-			$security_sql = "UPDATE tbl_users SET security_question = $security_question, security_answer = $security_answer WHERE user_id='$user_id'";
-			$stmt = mysqli_stmt_init($conn);
-    		if(!mysqli_stmt_prepare($stmt,$sql)){
+			$security_sql = "UPDATE tbl_users SET security_question = '$security_question', security_answer = '$security_answer' WHERE user_id='$user_id'";
+			echo($security_sql);
+    		if(!mysqli_stmt_prepare($stmt,$security_sql)){
     			exit('SQL Error');
     		}
     		mysqli_stmt_execute($stmt);
