@@ -2,7 +2,6 @@
 include('include/conn.php');
 require_once 'include/GoogleAuthenticator.php';
 $gauth = new GoogleAuthenticator();
-
 if(empty($_SESSION['user_id']))
 {
 	echo "<script> window.location = 'index.php'; </script>";
@@ -78,7 +77,7 @@ $stmt = mysqli_stmt_init($conn);
 							window.location = 'logged_in.php';
 						}
 						else{
-							alert("not done");
+							alert("Failed!");
 						}
 					});
 				}

@@ -67,7 +67,7 @@ if($process_name == "user_login"){
 		if($row = mysqli_fetch_assoc($result)){
 			if(password_verify($login_password,$row[password])){
 				$_SESSION['user_id'] = $row['user_id'];
-				echo "done";
+				echo "Valid Credentials";
 			} else{
 				echo "Invalid Password";
 			}

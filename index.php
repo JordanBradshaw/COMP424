@@ -7,40 +7,9 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	
     <link rel="stylesheet" type="text/css" href="css/app_style.css" charset="utf-8" />
-    <style>
-	meter {
-	  /* Reset the default appearance */
-	  -webkit-appearance: none;
-	     -moz-appearance: none;
-	          appearance: none;
-	  margin: 0 auto 1em;
-	  width: 100%;
-	  height: 0.5em;
-
-	  /* Applicable only to Firefox */
-	  background: none;
-	  background-color: rgba(0, 0, 0, 0.1);
-	}
-	meter::-webkit-meter-bar {
-	  background: none;
-	  background-color: rgba(0, 0, 0, 0.1);
-	}
-	/* Webkit based browsers */
-	meter[value="1"]::-webkit-meter-optimum-value { background: red; }
-	meter[value="2"]::-webkit-meter-optimum-value { background: yellow; }
-	meter[value="3"]::-webkit-meter-optimum-value { background: orange; }
-	meter[value="4"]::-webkit-meter-optimum-value { background: green; }
-
-	/* Gecko based browsers */
-	meter[value="1"]::-moz-meter-bar { background: red; }
-	meter[value="2"]::-moz-meter-bar { background: yellow; }
-	meter[value="3"]::-moz-meter-bar { background: orange; }
-	meter[value="4"]::-moz-meter-bar { background: green; }
-    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
 </head>
 <body>
-
 <div class="container" style="margin-top:5%;background-color:lightblue;max-width:500px;">
 	<div class="row-fluid">
 		<div class="col-md-auto" style="max-width:500px;margin:auto;">
@@ -55,7 +24,6 @@
                 </ul>
 				<div class="tab-content">
 					<div id="sectionA" class="tab-pane fade in active">
-			<!--<h3>Registration</h3>-->
 					<div class="inner-form">
 						<form name="signup-form" id="signup-form">
 							<input type="hidden" id="process_name" name="process_name" value="user_register" />
@@ -147,7 +115,7 @@
 						window.location = 'save_2fa.php';
 					}
 					else{
-						alert("not done");
+						alert("Failed");
 					}
 					
 				});
@@ -158,11 +126,11 @@
 				var data = $("#login-form").serialize();
 				$.post('include/check_user.php', data, function(data,status){
 					console.log("Submitting Result => Data: " + data + "\nStatus: " + status);
-					if( data == "done"){
+					if( data == "Valid Credentials"){
 						window.location = 'verify_2fa.php';
 					}
 					else{
-						alert("not done");
+						alert("Failed");
 					}
 					
 				});
