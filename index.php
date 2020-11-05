@@ -150,12 +150,11 @@
 
 <script>
 	$(document).ready(function(){
-		/* submit form details */
 		$(document).on('click', '.btn-reg-submit', function(ev){
-			if($("#reg_password") != $("#reg_password2")){
+			if($("#reg_password").val() != $("#reg_password2").val()){
 				alert("Password fields are not the same!");
 			}
-			if($("#signup-form").valid() == true){
+			else if($("#signup-form").valid() == true){
 				var data = $("#signup-form").serialize();
 				$.post('check_user.php', data, function(data,status){
 					console.log("Submitting Result => Data: " + data + "\nStatus: " + status);
@@ -169,9 +168,6 @@
 				});
 			}
 		});
-		/* ebd submit form details */
-		
-		/* submit form details */
 		$(document).on('click', '.btn-login-submit', function(ev){
 			if($("#login-form").valid() == true){
 				var data = $("#login-form").serialize();

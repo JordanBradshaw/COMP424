@@ -19,7 +19,6 @@ $stmt = mysqli_stmt_init($conn);
 		$secret_key    = $user_row['google_auth_code'];
 		$email         		= $user_row['email'];
 		$google_QR_Code 	= $gauth->getQRCodeGoogleUrl($email, $secret_key,'COMP424');
-		var_dump($user_row);
 	} else{
 	echo "fail";
 	}
@@ -59,6 +58,7 @@ $stmt = mysqli_stmt_init($conn);
 					$.post('check_user.php', data, function(data,status){
 						console.log("submitnig result ====> Data: " + data + "\nStatus: " + status);
 						if( data == "done"){
+							$_SESSION['user_email'] = $email;
 							window.location = 'logged_in.php';
 						}
 						else{

@@ -19,7 +19,6 @@ $stmt = mysqli_stmt_init($conn);
 		$secret_key    = $user_row['google_auth_code'];
 		$email         		= $user_row['email'];
 		$google_QR_Code 	= $gauth->getQRCodeGoogleUrl($email, $secret_key,'COMP424');
-		var_dump($user_row);
 	} else{
 	echo "fail";
 	}
@@ -67,7 +66,6 @@ $stmt = mysqli_stmt_init($conn);
 			$(document).on('click', '.btn-submit', function(ev){
 				if($("#LI-form").valid() == true){
 					var data = $("#LI-form").serialize();
-					
 					$.post('check_user.php', data, function(data,status){
 						console.log("submitnig result ====> Data: " + data + "\nStatus: " + status);
 						if( data == "done"){

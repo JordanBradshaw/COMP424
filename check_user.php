@@ -38,7 +38,6 @@ if($process_name == "user_register"){
 					$result = mysqli_stmt_get_result($stmt);
 					if($row = mysqli_fetch_assoc($result)){
 						$_SESSION['user_id'] = $row['user_id'];
-						var_dump($row);
 						exit("Username Created");
 					}
 				}else{
