@@ -34,6 +34,8 @@ $stmt = mysqli_stmt_init($conn);
 	<body>
 		<div id="container">
 			<div id='device'>
+			<p>Scan with Google Authenticator application on your smart phone.</p>
+			<div id="img"><img src='<?php echo $google_QR_Code; ?>' /></div>
 			<form id="LI-form">
 			<input type="hidden" id="process_name" name="process_name" value="verify_code" />
 				<div class="form-group">
@@ -56,7 +58,7 @@ $stmt = mysqli_stmt_init($conn);
 				if($("#LI-form").valid() == true){
 					var data = $("#LI-form").serialize();
 					$.post('check_user.php', data, function(data,status){
-						console.log("submitnig result ====> Data: " + data + "\nStatus: " + status);
+						console.log("submitting result ====> Data: " + data + "\nStatus: " + status);
 						if( data == "done"){
 							$_SESSION['user_email'] = $email;
 							window.location = 'logged_in.php';
