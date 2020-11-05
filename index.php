@@ -91,7 +91,7 @@
 									        0: "Worst",
 									        1: "Bad",
 									        2: "Weak",
-										3: "Good",
+											3: "Good",
 									        4: "Strong"
 									}
 									var password = document.getElementById('reg_password');
@@ -152,6 +152,9 @@
 	$(document).ready(function(){
 		/* submit form details */
 		$(document).on('click', '.btn-reg-submit', function(ev){
+			if($("#reg_password") != $("#reg_password2")){
+				alert("Password fields are not the same!");
+			}
 			if($("#signup-form").valid() == true){
 				var data = $("#signup-form").serialize();
 				$.post('check_user.php', data, function(data,status){
