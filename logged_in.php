@@ -1,61 +1,67 @@
-
-
-
-<?php require "include/topNav.php";?>
+<?php
+include("include/conn.php");
+if (empty($_SESSION['id'])) {
+    echo "<script> window.location = 'index.php'; </script>";
+}
+ 
+$id = $_SESSION['id'];
+$user_result = mysql_query("select * from users_info where id='$id'") or die(mysql_error());
+$user_row = mysql_fetch_array($user_result);
+?>
+<!doctype html>
 <html>
 <head>
-<link rel="stylesheet" href="include/styles.css">
-<style>
-  </style>
+    <title>SoftAOX | Google Two Factor Authentication Sign In and Join Now using jQuery, PHP &amp; MySQL</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/app_style.css" charset="utf-8" />
 </head>
 <body>
-<main>
-<<?php
-include('include/conn.php');
-if(empty($_SESSION['user_id']))
-{
-	echo "<script> window.location = 'index.php'; </script>";
-}
-$user_id = $_SESSION['user_id'];
-?>
-if(isset($_SESSION['user_id'])){
-if ($_SESSION['NAMEuser'] == "Administrator"){
-  echo '<br><h1 align="center">Welcome Administrator!</h1><br><table align="center" style="border:1px solid black; border-collapse: collapse;"><tbody><tr style="border:1px solid black"><th>UserID</th><th>Username</th><th>Password</th><tr>';
-  $sql = "SELECT * from users ORDER BY username ASC";
-	$result = mysqli_query($conn, $sql);
-	while ($row = mysqli_fetch_row($result)) {
-		print("<tr><td>");
-		print($row[0]);			// $row[0] is the first col (artistId)
-		print("</td><td>");
-    print($row[1]);			// $row[1] is the second col (name)
-    print("</td><td>");
-		print($row[2]);			// $row[1] is the second col (name)
-		print("</td></tr>");
-	}
-echo '</tbody></table>';
-}
-else{
-   echo "<p> Welcome fam ";
-   echo $_SESSION[NAMEuser];
-   echo " with a ID# of ";
-   echo $_SESSION[IDuser];
-   echo "</p><br>";
-   echo "<p>BRING ON THE VIBES ->";
-   echo '<input type="checkbox" id="rave" name="rave" value="rave">';
-}}else{
-echo ' <h3>Login Status: </h3><h3 id="response"></h3><br> <h1 style="text-align:center">~QUARANTINE 484 RAVE~</h1>
-<h2>Account Creation Form</h2>
-<form method="post" action="include/signupSubmit.php">
-  <label>
-    Username: <br />
-    <input type="text" id="usernameField" value="" name="usernameString" />
-    <br />
-  <label for="password">Password: </label><br />
-  <input type="password" id="passwordField" name="passwordString"/><br />
-  <input type="button" id="signupButton" value="Submit" name="signupButton" />
-</form>';
-}?>
-</main>
-
+    <div class="container" style="margin-top:20px;">
+        <div class="row-fluid">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Hi, <?php echo $user_row['user_name']; ?></h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-3 col-lg-3 " align="center">
+                                <img alt="User Pic" src="img/user_icon.png" class="img-circle img-responsive">
+                            </div>
+                            <div class=" col-md-9 col-lg-9 ">
+                                <table class="table table-user-information">
+                                    <tbody>
+                                        <tr>
+                                            <td>User Name:</td>
+                                            <td>
+                                                <?php echo $user_row[ 'user_name']; ?>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Email:</td>
+                                            <td>
+                                                <?php echo $user_row[ 'email']; ?>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Google Authenticator Code:</td>
+                                            <td>
+                                                <?php echo $user_row[ 'google_authentication']; ?>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <a href="logout.php">
+                                    <button type="button" class="btn btn-primary">Logout</button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </body>
 </html>

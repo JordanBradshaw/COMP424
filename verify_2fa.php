@@ -61,13 +61,13 @@ $stmt = mysqli_stmt_init($conn);
 			$(document).on('click', '.btn-submit', function(ev){
 				if($("#verify2fa-form").valid() == true){
 					var data = $("#verify2fa-form").serialize();
-					$.post('check_user.php', data, function(data,status){
+					$.post('include/check_user.php', data, function(data,status){
 						console.log("Submitting result ====> Data: " + data + "\nStatus: " + status);
 						if( data == "Verify 2FA Success"){
 							window.location = 'logged_in.php';
 						}
 						else{
-							alert("not done2222");
+							alert("Invalid Google Authenticator Code!");
 						}
 						
 					});

@@ -1,10 +1,9 @@
 <?php
-include("include/conn.php");
-require_once 'include/GoogleAuthenticator.php';
+include("conn.php");
+require_once 'GoogleAuthenticator.php';
 $gauth = new GoogleAuthenticator();
 $secret_key = $gauth->createSecret();
 $process_name = $_POST['process_name'];
-
 if($process_name == "user_register"){
 	$reg_name		= $_POST['reg_name'];
 	$reg_email		= $_POST['reg_email'];
@@ -51,7 +50,6 @@ if($process_name == "user_register"){
 	mysqli_stmt_close($stmt);
 	mysqli_close($conn);
 }
-
 if($process_name == "user_login"){
         $login_email 		= $_POST['login_email'];
         $login_password 	= $_POST['login_password'];
