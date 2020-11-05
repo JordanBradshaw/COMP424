@@ -32,15 +32,29 @@ $stmt = mysqli_stmt_init($conn);
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	</head>
 	<body>
-		<div id="container">
-			<div id='device'>
-			<p>Scan with Google Authenticator application on your smart phone.</p>
+	<div class="container" style="margin-top:5%;background-color:lightblue;max-width:500px;">
+		<div class="row-fluid">
+			<div class="col-md-auto" style="max-width:500px;margin:auto;">
+				<p>Scan with Google Authenticator application on your smart phone.</p>
 			<div id="img"><img src='<?php echo $google_QR_Code; ?>' /></div>
 			<form id="LI-form">
 			<input type="hidden" id="process_name" name="process_name" value="verify_code" />
 				<div class="form-group">
 					<label for="email">Place your code here:</label>
 					<input type="text" name="scan_code" class="form-control" id="scan_code" required />
+				</div>
+				<div class="form-group">
+					<label for="security_question">Choose A Security Question:</label>
+					<select name="security_question" id="security_question">
+  						<option value="What was your childhood nickname?">What was your childhood nickname?</option>
+  						<option value="In what city did you meet your spouse/significant other?">In what city did you meet your spouse/significant other?</option>
+  						<option value="What is the name of your favorite childhood friend?">What is the name of your favorite childhood friend? </option>
+						<option value="What street did you live on in third grade?">What street did you live on in third grade?</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="security_answer">Choose A Security Answer:</label>
+					<input type="text" name="security_answer" class="form-control" id="security_answer" required />
 				</div>
 				<input type="button" class="btn btn-success btn-submit" value="Verify Code"/>
 			</form>
@@ -51,6 +65,7 @@ $stmt = mysqli_stmt_init($conn);
 			<a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en" target="_blank"><img class="app" src="images/android.png" /></a>
 			</div>
 		</div>
+	</div>
 	<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.js"></script>
 	<script>
 		$(document).ready(function(){
@@ -58,15 +73,14 @@ $stmt = mysqli_stmt_init($conn);
 				if($("#LI-form").valid() == true){
 					var data = $("#LI-form").serialize();
 					$.post('check_user.php', data, function(data,status){
-						console.log("submitting result ====> Data: " + data + "\nStatus: " + status);
-						if( data == "done"){
+						console.log("Submitting result ====> Data: " + data + "\nStatus: " + status);
+						if( data == "Saved 2FA Success"){
 							$_SESSION['user_email'] = $email;
 							window.location = 'logged_in.php';
 						}
 						else{
 							alert("not done");
 						}
-						
 					});
 				}
 			});
