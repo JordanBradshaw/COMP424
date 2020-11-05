@@ -56,7 +56,7 @@ $stmt = mysqli_stmt_init($conn);
 					<label for="security_answer">Choose A Security Answer:</label>
 					<input type="text" name="security_answer" class="form-control" id="security_answer" required />
 				</div>
-				<input type="button" class="btn btn-success btn-submit" value="Verify Code"/>
+				<input type="button" class="btn btn-success btn-submit" style="float: right;" value="Submit"/>
 			</form>
 			</div>
 			<div style="text-align:center">
