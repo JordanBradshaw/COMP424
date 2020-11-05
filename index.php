@@ -5,10 +5,49 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
+	
     <link rel="stylesheet" type="text/css" href="css/app_style.css" charset="utf-8" />
+    <style>
+	meter {
+	  /* Reset the default appearance */
+	  -webkit-appearance: none;
+	     -moz-appearance: none;
+	          appearance: none;
+
+	  margin: 0 auto 1em;
+	  width: 100%;
+	  height: 0.5em;
+
+	  /* Applicable only to Firefox */
+	  background: none;
+	  background-color: rgba(0, 0, 0, 0.1);
+	}
+
+	meter::-webkit-meter-bar {
+	  background: none;
+	  background-color: rgba(0, 0, 0, 0.1);
+	}
+
+	/* Webkit based browsers */
+	meter[value="1"]::-webkit-meter-optimum-value { background: red; }
+	meter[value="2"]::-webkit-meter-optimum-value { background: yellow; }
+	meter[value="3"]::-webkit-meter-optimum-value { background: orange; }
+	meter[value="4"]::-webkit-meter-optimum-value { background: green; }
+
+	/* Gecko based browsers */
+	meter[value="1"]::-moz-meter-bar { background: red; }
+	meter[value="2"]::-moz-meter-bar { background: yellow; }
+	meter[value="3"]::-moz-meter-bar { background: orange; }
+	meter[value="4"]::-moz-meter-bar { background: green; }
+
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
+
+
 </head>
 <body>
+
 <div class="container" style="margin-top:5%;background-color:lightblue;max-width:500px;">
 	<div class="row-fluid">
 		<div class="col-md-auto" style="max-width:500px;margin:auto;">
@@ -26,7 +65,7 @@
 			<!--<h3>Registration</h3>-->
 					<div class="inner-form">
 						<form name="signup-form" id="signup-form">
-							<input type="hidden" id="process_name" name="process_name" value="user_registor" />
+							<input type="hidden" id="process_name" name="process_name" value="user_register" />
 			  					<div class="errorMsg errorMsgReg"></div>
 			  					<div class="form-group">
 									<label for="name">Full Name:</label>
@@ -43,7 +82,38 @@
 			  					<div class="form-group">
 									<label for="password">Password:</label>
 									<input type="password" name="reg_password" class="form-control" id="reg_password" required />
-			  					</div>
+									<meter max="4" id="password-strength-meter"></meter>
+									<p id="password-strength-text"></p>
+								</div>
+
+								<script type="text/javascript">
+									var strength = {
+									        0: "Worst",
+									        1: "Bad",
+									        2: "Weak",
+										3: "Good",
+									        4: "Strong"
+									}
+									var password = document.getElementById('reg_password');
+									var meter = document.getElementById('password-strength-meter');
+									var text = document.getElementById('password-strength-text');
+
+									password.addEventListener('input', function() {
+										var val = password.value;
+										var result = zxcvbn(val);
+
+									// Update the password strength meter
+									meter.value = result.score;
+
+									// Update the text indicator
+									if (val !== "") {
+										text.innerHTML = "Strength: " + strength[result.score]; 
+									} else {
+										text.innerHTML = "";
+									}
+									});
+								</script>
+
 								<div class="form-group">
 									<label for="password2">Re-enter Password:</label>
 									<input type="password" name="reg_password2" class="form-control" id="reg_password2" required />
@@ -85,9 +155,9 @@
 			if($("#signup-form").valid() == true){
 				var data = $("#signup-form").serialize();
 				$.post('check_user.php', data, function(data,status){
-					console.log("submitnig result ====> Data: " + data + "\nStatus: " + status);
-					if( data == "done"){
-						window.location = 'user_confirm.php';
+					console.log("Submitting Result => Data: " + data + "\nStatus: " + status);
+					if( data == "Username Created"){
+						window.location = 'save_2fa.php';
 					}
 					else{
 						alert("not done");
@@ -103,7 +173,7 @@
 			if($("#login-form").valid() == true){
 				var data = $("#login-form").serialize();
 				$.post('check_user.php', data, function(data,status){
-					console.log("submitnig result ====> Data: " + data + "\nStatus: " + status);
+					console.log("Submitting Result => Data: " + data + "\nStatus: " + status);
 					if( data == "done"){
 						window.location = 'user_confirm.php';
 					}
