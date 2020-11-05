@@ -18,19 +18,11 @@ $stmt = mysqli_stmt_init($conn);
 		if($user_row = mysqli_fetch_assoc($result)){
 		$secret_key    = $user_row['google_auth_code'];
 		$email         		= $user_row['email'];
-		$google_QR_Code 	= $gauth->getQRCodeGoogleUrl($email, $secret_key,'Lisenme');
+		$google_QR_Code 	= $gauth->getQRCodeGoogleUrl($email, $secret_key,'COMP424');
 		var_dump($user_row);
 	} else{
 	echo "fail";
 	}
-	#$user_result = mysql_query( "SELECT * FROM tbl_users WHERE user_id='$user_id'");
-#$user_result = mysql_query("select * from tbl_users where user_id='$user_id'") or die(mysql_error());
-#$user_row = mysql_fetch_array($user_result);
-#var_dump($user_row);
-#$secret_key	= $user_row['google_auth_code'];
-#$email		= $user_row['email'];
-
-#$google_QR_Code = $gauth->getQRCodeGoogleUrl($email, $secret_key,'Lisenme');
 ?>
 <!DOCTYPE html>
 <html>
