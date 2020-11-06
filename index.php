@@ -11,11 +11,11 @@
 	<script src="https://www.google.com/recaptcha/api.js"></script>
 </head>
 <body>
-<div class="container" ">
+<div class="container">
 	<div class="row-fluid">
-		<div class="col-md-auto" >
+		<div class="col-md-auto">
 			<div class="form-body">
-                <ul class="nav nav-tabs final-login">
+                <ul class="nav nav-tabs nav-justified final-login">
                     <li class="active">
 						<a data-toggle="tab" href="#sectionA">Sign Up!</a>
                     </li>
@@ -25,7 +25,7 @@
                 </ul>
 				<div class="tab-content">
 					<div id="sectionA" class="tab-pane fade in active">
-					<div class="inner-form">
+						<div class="inner-form">
 						<form name="signup-form" id="signup-form">
 							<input type="hidden" id="process_name" name="process_name" value="user_register" />
 			  					<div class="errorMsg errorMsgReg"></div>
@@ -33,9 +33,9 @@
 									<label for="name">Full Name:</label>
 										<input type="text" name="reg_name" class="form-control" id="reg_name" required />
 			  					</div>
-								  <div class="form-group">
+								<div class="form-group">
 									<label for="birthday">Birthday:</label>
-									<input type="date" name="reg_birthday" class="form-control" id="reg_birthday" required />
+									<input type="date" style="text-align:center;" name="reg_birthday" class="form-control" id="reg_birthday" required />
 			  					</div>
 			  					<div class="form-group">
 									<label for="email">Email:</label>
@@ -76,10 +76,10 @@
 									<input type="password" name="reg_password2" class="form-control" id="reg_password2" required />
 			  					</div>
 								<div class="form-group">
-								<p>Captcha:</p>
-								<div class="g-recaptcha" data-sitekey="6Ld7hdoZAAAAAJU-5NRUaR5Yjdql42oEkmjZtUeP"></div>
+									<label for="g-recaptcha">Captcha:</label></br>
+									<div class="g-recaptcha" style="display:inline-block;" data-sitekey="6Ld7hdoZAAAAAJU-5NRUaR5Yjdql42oEkmjZtUeP"></div>
 								</div>
-			  				<button type="button" class="btn btn-primary btn-reg-submit">Submit</button>
+							  	<button type="button" class="btn btn-primary btn-reg-submit">Submit</button>
 						</form>
 						<div class="clearfix"></div>
 					</div>
