@@ -16,7 +16,7 @@ $user_row = mysql_fetch_array($user_result);
     <link rel="stylesheet" type="text/css" href="css/app_style.css" charset="utf-8" />
 </head>
 <body>
-    <div class="container" style="margin-top:20px;">
+    <div class="container">
         <div class="row-fluid">
             <div class="col-md-8 col-md-offset-2">
                 <div class="panel panel-info">

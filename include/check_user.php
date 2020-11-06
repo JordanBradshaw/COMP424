@@ -5,51 +5,53 @@ $gauth = new GoogleAuthenticator();
 $secret_key = $gauth->createSecret();
 $process_name = $_POST['process_name'];
 if($process_name == "user_register"){
-	$reg_name		= $_POST['reg_name'];
-	$reg_email		= $_POST['reg_email'];
-	$reg_password		= $_POST['reg_password'];
-	$sql = "SELECT * FROM tbl_users WHERE email=?";
-	$stmt = mysqli_stmt_init($conn);
-	if(!mysqli_stmt_prepare($stmt, $sql)){
-		echo "SQLError";
-	}else {
-		mysqli_stmt_bind_param($stmt, "s", $reg_email);
-		mysqli_stmt_execute($stmt);
-		mysqli_stmt_store_result($stmt);
-		$resultCheck = mysqli_stmt_num_rows($stmt);
-		if ($resultCheck > 0) {
-			exit("This email already exists in the system");
-		} else {
-			$sql = "INSERT INTO tbl_users (profile_name, email, password, google_auth_code) VALUES (?,?,?,?)";
-			$stmt = mysqli_stmt_init($conn);
-			if (!mysqli_stmt_prepare($stmt, $sql)) {
-				exit("SQL Error");
-			} else {
-				$hashPassword = password_hash($reg_password, PASSWORD_DEFAULT);
-				mysqli_stmt_bind_param($stmt, "ssss", $reg_name, $reg_email,$hashPassword,$secret_key);
-				if($stmt->execute()){
-					$sql = "SELECT user_id FROM tbl_users WHERE email='$reg_email'";
-					$stmt = mysqli_stmt_init($conn);
-					if(!mysqli_stmt_prepare($stmt,$sql)){
-								exit('SQL Error');
-					}
-					mysqli_stmt_execute($stmt);
-					$result = mysqli_stmt_get_result($stmt);
-					if($row = mysqli_fetch_assoc($result)){
-						$_SESSION['user_id'] = $row['user_id'];
-						exit("Username Created");
-					}
-				}else{
-					echo "Error: " . mysqli_error($conn);
-					exit("Username Creation Failed");
-				}
-				exit("Username Created");
-			}
-		}
-		}
-	mysqli_stmt_close($stmt);
-	mysqli_close($conn);
+        $reg_name               = $_POST['reg_name'];
+        $reg_email              = $_POST['reg_email'];
+        $reg_password           = $_POST['reg_password'];
+        $sql = "SELECT * FROM tbl_users WHERE email=?";
+        $stmt = mysqli_stmt_init($conn);
+        if(!mysqli_stmt_prepare($stmt, $sql)){
+                echo "SQLError";
+        }else {
+                mysqli_stmt_bind_param($stmt, "s", $reg_email);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_store_result($stmt);
+                $resultCheck = mysqli_stmt_num_rows($stmt);
+                if ($resultCheck > 0) {
+                        exit("This email already exists in the system");
+                } else {
+                        $sql = 'INSERT INTO tbl_users (profile_name, email, password, google_auth_code, created_at) VALUES (?,?,?,?,?)';
+                        $stmt = mysqli_stmt_init($conn);
+                        if (!mysqli_stmt_prepare($stmt, $sql)) {
+                                exit("SQL Error");
+                        } else {
+                                $hashPassword = password_hash($reg_password, PASSWORD_DEFAULT);
+                                $currDate = date("Y-m-d");
+                                mysqli_stmt_bind_param($stmt, "sssss", $reg_name, $reg_email,$hashPassword,$secret_key,$currDate);
+                                if($stmt->execute()){
+                                        $sql = "SELECT user_id FROM tbl_users WHERE email='$reg_email'";
+                                        $stmt = mysqli_stmt_init($conn);
+                                        if(!mysqli_stmt_prepare($stmt,$sql)){
+                                                                exit('SQL Error');
+                                        }
+                                        mysqli_stmt_execute($stmt);
+                                        $result = mysqli_stmt_get_result($stmt);
+                                        if($row = mysqli_fetch_assoc($result)){
+                                                $_SESSION['user_id'] = $row['user_id'];
+                                                exit("Username Created");
+                                        }
+                                }else{
+                                        echo "Error: " . mysqli_error($conn);
+                                        exit("Username Creation Failed");
+                                }
+                                exit("Username Created");
+                        }
+                }
+                }
+        mysqli_stmt_close($stmt);
+        mysqli_close($conn);
 }
+
 if($process_name == "user_login"){
         $login_email 		= $_POST['login_email'];
         $login_password 	= $_POST['login_password'];
