@@ -8,11 +8,12 @@
 	
     <link rel="stylesheet" type="text/css" href="css/app_style.css" charset="utf-8" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.2.0/zxcvbn.js"></script>
+	<script src="https://www.google.com/recaptcha/api.js"></script>
 </head>
 <body>
-<div class="container" style="margin-top:5%;background-color:lightblue;max-width:500px;">
+<div class="container" ">
 	<div class="row-fluid">
-		<div class="col-md-auto" style="max-width:500px;margin:auto;">
+		<div class="col-md-auto" >
 			<div class="form-body">
                 <ul class="nav nav-tabs final-login">
                     <li class="active">
@@ -74,6 +75,10 @@
 									<label for="password2">Re-enter Password:</label>
 									<input type="password" name="reg_password2" class="form-control" id="reg_password2" required />
 			  					</div>
+								<div class="form-group">
+								<p>Captcha:</p>
+								<div class="g-recaptcha" data-sitekey="6Ld7hdoZAAAAAJU-5NRUaR5Yjdql42oEkmjZtUeP"></div>
+								</div>
 			  				<button type="button" class="btn btn-primary btn-reg-submit">Submit</button>
 						</form>
 						<div class="clearfix"></div>

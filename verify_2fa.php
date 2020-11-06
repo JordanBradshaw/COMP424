@@ -33,9 +33,9 @@ $stmt = mysqli_stmt_init($conn);
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	</head>
 	<body>
-	<div class="container" style="margin-top:5%;background-color:lightblue;max-width:500px;">
+	<div class="container">
 		<div class="row-fluid">
-			<div class="col-md-auto" style="max-width:500px;margin:auto;">
+			<div class="col-md-auto" >
 			<p>Verify with Google Authenticator application associated with your account on your smart phone.</p>
 			<form id="verify2fa-form">
 			<input type="hidden" id="process_name" name="process_name" value="verify_code" />

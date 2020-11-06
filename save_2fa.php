@@ -31,11 +31,11 @@ $stmt = mysqli_stmt_init($conn);
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	</head>
 	<body>
-	<div class="container" style="margin-top:5%;background-color:lightblue;max-width:500px;">
+	<div class="container">
 		<div class="row-fluid">
-			<div class="col-md-auto" style="max-width:500px;margin:auto;">
+			<div class="col-md-auto">
 				<p>Scan with Google Authenticator application on your smart phone.</p>
-			<div id="img"><img src='<?php echo $google_QR_Code; ?>' /></div>
+			<div id="img"><img src='<?php echo $google_QR_Code; ?>' /></div></br>
 			<form id="2fa-form">
 			<input type="hidden" id="process_name" name="process_name" value="save_code" />
 				<div class="form-group">
@@ -60,8 +60,8 @@ $stmt = mysqli_stmt_init($conn);
 			</div>
 			<div style="text-align:center">
 				<h6>Download Google Authenticator <br/> application using this link(s),</h6>
-			<a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8" target="_blank"><img class='app' style="max-width=50%;max-height=50%;" src="images/iphone.png" /></a>
-			<a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en" target="_blank"><img class="app" style="max-width=50%;max-height=50%;" src="images/android.png" /></a>
+			<a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8" target="_blank"><img class='app' src="images/iphone.png" /></a>
+			<a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en" target="_blank"><img class="app" src="images/android.png" /></a>
 			</div>
 		</div>
 	</div>
