@@ -92,6 +92,7 @@ if($process_name == "verify_code"){
         	$checkResult = $gauth->verifyCode($secret_key, $scan_code, 2);    // 2 = 2*30sec clock tolerance
         if ($checkResult){
                 $_SESSION['googleVerifyCode'] = $scan_code;
+                $_SESSION['user_valid'] = 'True';
                 exit("Verify 2FA Success");
         }
         else{
@@ -123,7 +124,8 @@ if($process_name == "save_code"){
     			exit('SQL Error');
     		}
     		mysqli_stmt_execute($stmt);
-			$_SESSION['googleVerifyCode'] = $scan_code;
+                $_SESSION['googleVerifyCode'] = $scan_code;
+                $_SESSION['user_valid'] = 'True';
             exit("Saved 2FA Success");
         }
         else{
