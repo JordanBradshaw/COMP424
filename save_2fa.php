@@ -24,6 +24,7 @@ $stmt = mysqli_stmt_init($conn);
 ?>
 <!DOCTYPE html>
 <html>
+<title>Comp 424 Dope Login System</title>
 	<head>
 		<link rel="stylesheet" type="text/css" href="css/app_style.css" charset="utf-8" />
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">

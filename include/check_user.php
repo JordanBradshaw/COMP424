@@ -26,8 +26,8 @@ if($process_name == "user_register"){
                                 exit("SQL Error");
                         } else {
                                 $hashPassword = password_hash($reg_password, PASSWORD_DEFAULT);
-                                $currDate = date("Y-m-d");
-                                mysqli_stmt_bind_param($stmt, "sssss", $reg_name, $reg_email,$hashPassword,$secret_key,$currDate);
+                                $current_date = date("Y-m-d");
+                                mysqli_stmt_bind_param($stmt, "sssss", $reg_name, $reg_email,$hashPassword,$secret_key,$current_date);
                                 if($stmt->execute()){
                                         $sql = "SELECT user_id FROM tbl_users WHERE email='$reg_email'";
                                         $stmt = mysqli_stmt_init($conn);
@@ -81,7 +81,7 @@ if($process_name == "verify_code"){
 	$scan_code = $_POST['scan_code'];
 	$user_id = $_SESSION['user_id'];
 	$sql = "SELECT * FROM tbl_users WHERE user_id='$user_id'";
-	$stmt = mysqli_stmt_init($conn);
+        $stmt = mysqli_stmt_init($conn);
         if(!mysqli_stmt_prepare($stmt,$sql)){
                 exit('SQL Error');
         }
@@ -89,11 +89,18 @@ if($process_name == "verify_code"){
         $result = mysqli_stmt_get_result($stmt);
         if($user_row = mysqli_fetch_assoc($result)){
                 $secret_key     = $user_row['google_auth_code'];
+                $total_logins   = $user_row['total_logins']++;
         	$checkResult = $gauth->verifyCode($secret_key, $scan_code, 2);    // 2 = 2*30sec clock tolerance
-        if ($checkResult){
-                $_SESSION['googleVerifyCode'] = $scan_code;
-                $_SESSION['user_valid'] = 'True';
-                exit("Verify 2FA Success");
+                if ($checkResult){
+                        $current_date = date("Y-m-d");
+                        $total_logins_sql = "UPDATE tbl_users SET total_logins = '$total_logins', last_login = '$current_date' WHERE user_id='$user_id'";
+    		        if(!mysqli_stmt_prepare($stmt,$security_sql)){
+    			        exit('SQL Error');
+    		        }
+    		        mysqli_stmt_execute($stmt);
+                        $_SESSION['googleVerifyCode'] = $scan_code;
+                        $_SESSION['user_valid'] = TRUE;
+                        exit("Verify 2FA Success");
         }
         else{
                 exit("Note : Code not matched.");
@@ -119,13 +126,13 @@ if($process_name == "save_code"){
         $secret_key     = $user_row['google_auth_code'];
         $checkResult = $gauth->verifyCode($secret_key, $scan_code, 2);    // 2 = 2*30sec clock tolerance
         if ($checkResult){
-			$security_sql = "UPDATE tbl_users SET security_question = '$security_question', security_answer = '$security_answer' WHERE user_id='$user_id'";
+		$security_sql = "UPDATE tbl_users SET security_question = '$security_question', security_answer = '$security_answer' WHERE user_id='$user_id'";
     		if(!mysqli_stmt_prepare($stmt,$security_sql)){
     			exit('SQL Error');
     		}
     		mysqli_stmt_execute($stmt);
                 $_SESSION['googleVerifyCode'] = $scan_code;
-                $_SESSION['user_valid'] = 'True';
+                $_SESSION['user_valid'] = TRUE;
             exit("Saved 2FA Success");
         }
         else{

@@ -26,7 +26,7 @@ $stmt = mysqli_stmt_init($conn);
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>2-Step Verification using Google Authenticator</title>
+    <title>Comp 424 Dope Login System</title>
 		<link rel="stylesheet" type="text/css" href="css/app_style.css" charset="utf-8" />
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
