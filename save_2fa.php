@@ -74,6 +74,7 @@ $stmt = mysqli_stmt_init($conn);
 					$.post('include/check_user.php', data, function(data,status){
 						console.log("Submitting result ====> Data: " + data + "\nStatus: " + status);
 						if( data == "Saved 2FA Success"){
+							$_SESSION['user_valid'] = 'True';
 							window.location = 'logged_in.php';
 						}
 						else{

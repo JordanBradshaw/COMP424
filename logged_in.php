@@ -1,9 +1,8 @@
 <?php
 include("include/conn.php");
-if (empty($_SESSION['user_id'])) {
+if ($_SESSION['user_valid'] != 'True')) {
     echo "<script> window.location = 'index.php'; </script>";
 }
- 
 $id = $_SESSION['user_id'];
 $user_result = mysql_query("select * from users_info where id='$id'") or die(mysql_error());
 $user_row = mysql_fetch_array($user_result);

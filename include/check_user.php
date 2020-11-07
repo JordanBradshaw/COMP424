@@ -69,9 +69,9 @@ if($process_name == "user_login"){
 		if($row = mysqli_fetch_assoc($result)){
 			if(password_verify($login_password,$row[password])){
 				$_SESSION['user_id'] = $row['user_id'];
-				echo "Valid Credentials";
+				exit("Valid Credentials");
 			} else{
-				echo "Invalid Password";
+				exit("Invalid Password");
 			}
 		}
 	}
@@ -92,10 +92,10 @@ if($process_name == "verify_code"){
         	$checkResult = $gauth->verifyCode($secret_key, $scan_code, 2);    // 2 = 2*30sec clock tolerance
         if ($checkResult){
                 $_SESSION['googleVerifyCode'] = $scan_code;
-                echo "Verify 2FA Success";
+                exit("Verify 2FA Success");
         }
         else{
-                echo 'Note : Code not matched.';
+                exit("Note : Code not matched.");
         }       
         } else{
         echo "SQL Fetch Failed";
@@ -124,10 +124,10 @@ if($process_name == "save_code"){
     		}
     		mysqli_stmt_execute($stmt);
 			$_SESSION['googleVerifyCode'] = $scan_code;
-            echo "Saved 2FA Success";
+            exit("Saved 2FA Success");
         }
         else{
-            echo 'Note : Code not matched.';
+            exit("Note : Code not matched.");
         }       
 	}
 	else{
