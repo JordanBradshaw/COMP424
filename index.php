@@ -109,7 +109,7 @@
 <script>
 	$(document).ready(function(){
 		$(document).on('click', '.btn-reg-submit', function(ev){
-			if($("#g-recaptcha-response").val() == NULL){
+			if($("#g-recaptcha-response").val() == ""){
 				alert("Captcha not selected!");
 			}
 			else if($("#reg_password").val() != $("#reg_password2").val()){

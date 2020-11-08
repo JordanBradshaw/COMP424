@@ -78,9 +78,9 @@ if($process_name == "user_login"){
 }
 
 if($process_name == "verify_code"){
-	$scan_code = $_POST['scan_code'];
-	$user_id = $_SESSION['user_id'];
-	$sql = "SELECT * FROM tbl_users WHERE user_id='$user_id'";
+        $scan_code = $_POST['scan_code'];
+        $user_id = $_SESSION['user_id'];
+        $sql = "SELECT * FROM tbl_users WHERE user_id='$user_id'";
         $stmt = mysqli_stmt_init($conn);
         if(!mysqli_stmt_prepare($stmt,$sql)){
                 exit('SQL Error');
@@ -89,26 +89,27 @@ if($process_name == "verify_code"){
         $result = mysqli_stmt_get_result($stmt);
         if($user_row = mysqli_fetch_assoc($result)){
                 $secret_key     = $user_row['google_auth_code'];
-                $total_logins   = $user_row['total_logins']++;
-        	$checkResult = $gauth->verifyCode($secret_key, $scan_code, 2);    // 2 = 2*30sec clock tolerance
+                $total_logins   = ++$user_row['total_logins'];
+                $checkResult = $gauth->verifyCode($secret_key, $scan_code, 2);    // 2 = 2*30sec clock tolerance
                 if ($checkResult){
                         $current_date = date("Y-m-d");
                         $total_logins_sql = "UPDATE tbl_users SET total_logins = '$total_logins', last_login = '$current_date' WHERE user_id='$user_id'";
-    		        if(!mysqli_stmt_prepare($stmt,$security_sql)){
-    			        exit('SQL Error');
-    		        }
-    		        mysqli_stmt_execute($stmt);
+                        if(!mysqli_stmt_prepare($stmt,$total_logins_sql)){
+                                exit('SQL Error');
+                        }
+                        mysqli_stmt_execute($stmt);
                         $_SESSION['googleVerifyCode'] = $scan_code;
                         $_SESSION['user_valid'] = TRUE;
                         exit("Verify 2FA Success");
         }
         else{
                 exit("Note : Code not matched.");
-        }       
+        }
         } else{
         echo "SQL Fetch Failed";
         }
 }
+
 
 if($process_name == "save_code"){
 	$user_id = $_SESSION['user_id'];

@@ -34,11 +34,11 @@ $sql = "SELECT * FROM tbl_users WHERE user_id='$user_id'";
                     </div>
                     <div class="panel-body">
                         <div class="row">
-                            <div class=" col-md-9 col-lg-9 ">
+                            <div class=" col-md-auto">
                             <table class="table table-user-information">
                                     <tbody>
                                         <tr>
-                                            <td>User Id:</td>
+                                            <td>User ID:</td>
                                             <td>
                                                 <?php echo $user_row[ 'user_id']; ?>
                                             </td>
@@ -50,15 +50,15 @@ $sql = "SELECT * FROM tbl_users WHERE user_id='$user_id'";
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>Google Authenticator Code:</td>
+                                            <td>Total Logins:</td>
                                             <td>
-                                                <?php echo $user_row[ 'google_auth_code']; ?>
+                                                <?php echo $user_row[ 'total_logins']; ?>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>Last Updated:</td>
+                                            <td>Last Login:</td>
                                             <td>
-                                                <?php echo $user_row[ 'updated_at']; ?>
+                                                <?php echo $user_row[ 'last_login']; ?>
                                             </td>
                                         </tr>
                                     </tbody>
