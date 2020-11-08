@@ -1,6 +1,6 @@
 <?php
 include("include/conn.php");
-echo var_dump($_SESSION);
+#echo var_dump($_SESSION);
 if (empty($_SESSION["user_valid"]) || ($_SESSION["user_valid"] != 1)) {
     echo "<script> window.location = 'index.php'; </script>";
 }

@@ -89,9 +89,9 @@ if($process_name == "verify_code"){
         $result = mysqli_stmt_get_result($stmt);
         if($user_row = mysqli_fetch_assoc($result)){
                 $secret_key     = $user_row['google_auth_code'];
-                $total_logins   = ++$user_row['total_logins'];
                 $checkResult = $gauth->verifyCode($secret_key, $scan_code, 2);    // 2 = 2*30sec clock tolerance
                 if ($checkResult){
+                        $total_logins   = ++$user_row['total_logins'];
                         $current_date = date("Y-m-d");
                         $total_logins_sql = "UPDATE tbl_users SET total_logins = '$total_logins', last_login = '$current_date' WHERE user_id='$user_id'";
                         if(!mysqli_stmt_prepare($stmt,$total_logins_sql)){
@@ -127,7 +127,9 @@ if($process_name == "save_code"){
         $secret_key     = $user_row['google_auth_code'];
         $checkResult = $gauth->verifyCode($secret_key, $scan_code, 2);    // 2 = 2*30sec clock tolerance
         if ($checkResult){
-		$security_sql = "UPDATE tbl_users SET security_question = '$security_question', security_answer = '$security_answer' WHERE user_id='$user_id'";
+                $total_logins   = ++$user_row['total_logins'];
+                $current_date = date("Y-m-d");
+		$security_sql = "UPDATE tbl_users SET total_logins = '$total_logins', last_login = '$current_date', security_question = '$security_question', security_answer = '$security_answer' WHERE user_id='$user_id'";
     		if(!mysqli_stmt_prepare($stmt,$security_sql)){
     			exit('SQL Error');
     		}
