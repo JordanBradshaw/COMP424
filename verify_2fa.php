@@ -1,27 +1,26 @@
 <?php
-include('include/conn.php');
+include 'include/conn.php';
 require_once 'include/GoogleAuthenticator.php';
 $gauth = new GoogleAuthenticator();
 
-if(empty($_SESSION['user_id']))
-{
-	echo "<script> window.location = 'index.php'; </script>";
+if (empty($_SESSION['user_id'])) {
+    echo "<script> window.location = 'index.php'; </script>";
 }
 $user_id = $_SESSION['user_id'];
 $sql = "SELECT * FROM tbl_users WHERE user_id='$user_id'";
 $stmt = mysqli_stmt_init($conn);
-	if(!mysqli_stmt_prepare($stmt,$sql)){
-        	exit('SQL Error');
-        }
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-		if($user_row = mysqli_fetch_assoc($result)){
-		$secret_key    = $user_row['google_auth_code'];
-		$email         		= $user_row['email'];
-		$google_QR_Code 	= $gauth->getQRCodeGoogleUrl($email, $secret_key,'COMP424');
-	} else{
-	echo "fail";
-	}
+if (!mysqli_stmt_prepare($stmt, $sql)) {
+    exit('SQL Error');
+}
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+if ($user_row = mysqli_fetch_assoc($result)) {
+    $secret_key = $user_row['google_auth_code'];
+    $email = $user_row['email'];
+    $google_QR_Code = $gauth->getQRCodeGoogleUrl($email, $secret_key, 'COMP424');
+} else {
+    echo "fail";
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -43,7 +42,7 @@ $stmt = mysqli_stmt_init($conn);
 					<label for="email">Place your code here:</label>
 					<input type="text" name="scan_code" class="form-control" id="scan_code" required />
 				  </div>
-				  
+
 				<input type="button" class="btn btn-success btn-submit" value="Verify Code"/>
 			</form>
 			</div>
@@ -69,7 +68,6 @@ $stmt = mysqli_stmt_init($conn);
 						else{
 							alert("Invalid Google Authenticator Code!");
 						}
-						
 					});
 				}
 			});

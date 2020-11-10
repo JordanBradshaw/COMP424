@@ -3,84 +3,30 @@ if [[ $(/usr/bin/id -u) -ne 0 ]]; then
     echo "Script must be running as root. Exiting..."
     exit
 fi
-
-iptables -F # Removing default policies
-iptables -P INPUT DROP # Dropping everything inbound by default
-iptables -P OUTPUT ACCEPT # Accepting all outbound because we'll need to be able to conduct updates, DNS queries
-iptables -P FORWARD DROP # Not a router, hence forwarding is disabled
-iptables -A INPUT -i lo -j ACCEPT # Loopback enabled
-iptables -A OUTPUT -o lo -j ACCEPT # Loopback enabled
-iptables -A INPUT -p tcp --dport 22 -j ACCEPT # SSH allowed
-iptables -A INPUT -p tcp --dport 443 -j ACCEPT # HTTPS allowed
-iptables -A INPUT -p tcp -m state --state RELATED,ESTABLISHED -j ACCEPT # Required to continue conversations with servers; will temporarily unlock TCP ports as need
-iptables -A INPUT -p udp -m state --state RELATED,ESTABLISHED -j ACCEPT # Required to continue conversations with servers; will temporarily unlock UDP ports as need
+# AWS ALREADY FILTERS THIS
+#iptables -F # Removing default policies
+#iptables -P INPUT DROP # Dropping everything inbound by default
+#iptables -P OUTPUT ACCEPT # Accepting all outbound because we'll need to be able to conduct updates, DNS queries
+#iptables -P FORWARD DROP # Not a router, hence forwarding is disabled
+#iptables -A INPUT -i lo -j ACCEPT # Loopback enabled
+#iptables -A OUTPUT -o lo -j ACCEPT # Loopback enabled
+#iptables -A INPUT -p tcp --dport 22 -j ACCEPT # SSH allowed
+#iptables -A INPUT -p tcp --dport 443 -j ACCEPT # HTTPS allowed
+#iptables -A INPUT -p tcp -m state --state RELATED,ESTABLISHED -j ACCEPT # Required to continue conversations with servers; will temporarily unlock TCP ports as need
+#iptables -A INPUT -p udp -m state --state RELATED,ESTABLISHED -j ACCEPT # Required to continue conversations with servers; will temporarily unlock UDP ports as need
 
 DEBIAN_FRONTEND=noninteractive apt install -y iptables-persistent # Installing persistence service
 invoke-rc.d netfilter-persistent save # Enabling persistence
-
 apt update # Updating software list
 timedatectl set-timezone America/Los_Angeles # Setting up the timezone to get proper log date & time
-
+#REQUIREMENTS FOR SNORT AS WELL AS ADDITIONAL PACKAGES
 DEBIAN_FRONTEND=noninteractive apt install -y build-essential autotools-dev libdumbnet-dev libluajit-5.1-dev libpcap-dev zlib1g-dev pkg-config libhwloc-dev cmake # Required tools for Snort
 DEBIAN_FRONTEND=noninteractive apt install -y liblzma-dev openssl libssl-dev cpputest libsqlite3-dev uuid-dev # Optional but recommended tools for snort
 DEBIAN_FRONTEND=noninteractive apt install -y libtool git autoconf # Required to use with Git
 DEBIAN_FRONTEND=noninteractive apt install -y bison flex # Required for Snort DAQ
 DEBIAN_FRONTEND=noninteractive apt install -y libnetfilter-queue-dev libmnl-dev # Required for inline
-
-mkdir ~/snort_src
-cd ~/snort_src
-# Installing safec for runtime bounds checks on legacy C-library calls; recommended by Snort
-wget https://github.com/rurban/safeclib/releases/download/v04062019/libsafec-04062019.0-ga99a05.tar.gz
-tar -xzf libsafec-04062019.0-ga99a05.tar.gz
-cd libsafec-04062019.0-ga99a05
-./configure
-make
-make install
-
-#PCRE manual install since Ubuntu's official one is outdated
-cd ~/snort_src
-wget https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz
-tar -xzf pcre-8.43.tar.gz
-cd pcre-8.43
-./configure
-make
-make install
-
-#gperftools 2.7 recommended to be installed for Snort
-cd ~/snort_src
-wget https://github.com/gperftools/gperftools/releases/download/gperftools-2.7/gperftools-2.7.tar.gz
-tar -xzf gperftools-2.7.tar.gz
-cd gperftools-2.7
-./configure
-make
-make install
-
-# Ragel required for Snort 3
-cd ~/snort_src
-wget http://www.colm.net/files/ragel/ragel-6.10.tar.gz
-tar -xzf ragel-6.10.tar.gz
-cd ragel-6.10
-./configure
-make
-make install
-
-# Boost library downloaded as prereq for Hyperscan, latter required for Snort 3
-cd ~/snort_src
-wget https://dl.bintray.com/boostorg/release/1.71.0/source/boost_1_71_0.tar.gz
-tar -xzf boost_1_71_0.tar.gz
-
-# Downloading & installing Hyperscan, required for Snort 3
-cd ~/snort_src
-wget https://github.com/intel/hyperscan/archive/v5.2.0.tar.gz
-tar -xzf v5.2.0.tar.gz
-
-mkdir ~/snort_src/hyperscan-5.2.0-build
-cd hyperscan-5.2.0-build
-
-cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DBOOST_ROOT=~/snort_src/boost_1_71_0/ ../hyperscan-5.2.0
-
-make
-make install
+DEBIAN_FRONTEND=noninteractive apt install -y openssh-server libpcre3-dev
+DEBIAN_FRONTEND=noninteractive apt install -y snort
 
 # Installing flatbuffers, recommended by Snort 3; memory efficient serialization library
 cd ~/snort_src
@@ -92,26 +38,7 @@ cmake ../flatbuffers-1.11.0
 make
 make install
 
-# Installing Snort 3's DAQ
-cd ~/snort_src
-git clone https://github.com/snort3/libdaq.git
-cd libdaq
-./bootstrap
-./configure
-make
-make install
-
 ldconfig # Updating shared libraries
-
-# Installing Snort 3 from source
-cd ~/snort_src
-git clone git://github.com/snortadmin/snort3.git
-cd snort3
-
-./configure_cmake.sh --prefix=/usr/local --enable-tcmalloc
-cd build
-make
-make install
 
 #Adding require environment variables to all users in the system + in sudoers group
 echo 'export LUA_PATH=/usr/local/include/snort/lua/\?.lua\;\;' | tee -a /home/*/.bashrc
@@ -224,8 +151,8 @@ ST=CA
 O=Comp424
 localityName=California
 commonName=$DOMAIN
-organizationalUnitName=Comp424BestGroup
-emailAddress=COMP@424Final.com
+organizationalUnitName=424Group
+emailAddress=JordanBradshaw27@.com
 "
 # Generate the server private key
 openssl genrsa -des3 -out $DOMAIN.key -passout env:PASSPHRASE 2048
