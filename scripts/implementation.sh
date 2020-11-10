@@ -14,31 +14,25 @@ fi
 #iptables -A INPUT -p tcp --dport 443 -j ACCEPT # HTTPS allowed
 #iptables -A INPUT -p tcp -m state --state RELATED,ESTABLISHED -j ACCEPT # Required to continue conversations with servers; will temporarily unlock TCP ports as need
 #iptables -A INPUT -p udp -m state --state RELATED,ESTABLISHED -j ACCEPT # Required to continue conversations with servers; will temporarily unlock UDP ports as need
-
-DEBIAN_FRONTEND=noninteractive apt install -y iptables-persistent # Installing persistence service
-invoke-rc.d netfilter-persistent save # Enabling persistence
+#DEBIAN_FRONTEND=noninteractive apt install -y iptables-persistent # Installing persistence service
+#invoke-rc.d netfilter-persistent save # Enabling persistence
 apt update # Updating software list
 timedatectl set-timezone America/Los_Angeles # Setting up the timezone to get proper log date & time
 #REQUIREMENTS FOR SNORT AS WELL AS ADDITIONAL PACKAGES
-DEBIAN_FRONTEND=noninteractive apt install -y build-essential autotools-dev libdumbnet-dev libluajit-5.1-dev libpcap-dev zlib1g-dev pkg-config libhwloc-dev cmake # Required tools for Snort
+DEBIAN_FRONTEND=noninteractive apt install -y snapd build-essential autotools-dev libdumbnet-dev libluajit-5.1-dev libpcap-dev zlib1g-dev pkg-config libhwloc-dev cmake # Required tools for Snort
 DEBIAN_FRONTEND=noninteractive apt install -y liblzma-dev openssl libssl-dev cpputest libsqlite3-dev uuid-dev # Optional but recommended tools for snort
 DEBIAN_FRONTEND=noninteractive apt install -y libtool git autoconf # Required to use with Git
 DEBIAN_FRONTEND=noninteractive apt install -y bison flex # Required for Snort DAQ
 DEBIAN_FRONTEND=noninteractive apt install -y libnetfilter-queue-dev libmnl-dev # Required for inline
-DEBIAN_FRONTEND=noninteractive apt install -y openssh-server libpcre3-dev
+DEBIAN_FRONTEND=noninteractive apt install -y openssh-server libpcre3-dev ethtool
 DEBIAN_FRONTEND=noninteractive apt install -y snort
-
 # Installing flatbuffers, recommended by Snort 3; memory efficient serialization library
-cd ~/snort_src
-wget https://github.com/google/flatbuffers/archive/v1.11.0.tar.gz -O flatbuffers-v1.11.0.tar.gz
-tar -xzf flatbuffers-v1.11.0.tar.gz
-mkdir flatbuffers-build
-cd flatbuffers-build
-cmake ../flatbuffers-1.11.0
-make
-make install
+DEBIAN_FRONTEND=noninteractive snap install flatbuffers
 
 ldconfig # Updating shared libraries
+#Change file permissions snort
+chmod -R 5775 /etc/snort/ 
+chmod -R 5775 /var/log/snort/ 
 
 #Adding require environment variables to all users in the system + in sudoers group
 echo 'export LUA_PATH=/usr/local/include/snort/lua/\?.lua\;\;' | tee -a /home/*/.bashrc
@@ -51,31 +45,26 @@ interface="$(route | grep '^default' | grep -o '[^ ]*$')" # Determining interfac
 #Creating service that disables LRO & GRO as required by Snort
 echo "[Unit]" > /lib/systemd/system/snort-ethtool.service
 echo "Description=Ethtool Configration for Snort 3; disables LRO & GRO" >> /lib/systemd/system/snort-ethtool.service
+echo "After=syslog.target network.target" >> /lib/systemd/system/snort-ethtool.service
 echo "" >> /lib/systemd/system/snort-ethtool.service
 echo "[Service]" >> /lib/systemd/system/snort-ethtool.service
 echo "Requires=network.target" >> /lib/systemd/system/snort-ethtool.service
 echo "Type=oneshot" >> /lib/systemd/system/snort-ethtool.service
 echo "ExecStart=/sbin/ethtool -K $interface gro off" >> /lib/systemd/system/snort-ethtool.service
 echo "ExecStart=/sbin/ethtool -K $interface lro off" >> /lib/systemd/system/snort-ethtool.service
+echo "ExecStart=/usr/local/bin/snort -q -c /etc/snort/snort.conf -i $interface" >> /lib/systemd/system/snort-ethtool.service
 echo "" >> /lib/systemd/system/snort-ethtool.service
 echo "[Install]" >> /lib/systemd/system/snort-ethtool.service
 echo "WantedBy=multi-user.target" >> /lib/systemd/system/snort-ethtool.service
 
+
+
+
 #Enabling and starting service
 systemctl enable snort-ethtool
 service snort-ethtool start
-
-#Installing community rules
-cd ~/snort_src/
-wget https://www.snort.org/downloads/community/snort3-community-rules.tar.gz
-tar -xzf snort3-community-rules.tar.gz
-cd snort3-community-rules
-mkdir /usr/local/etc/snort/rules
-mkdir /usr/local/etc/snort/builtin_rules
-mkdir /usr/local/etc/snort/so_rules
-mkdir /usr/local/etc/snort/lists
-cp snort3-community.rules /usr/local/etc/snort/rules
-cp sid-msg.map /usr/local/etc/snort/rules
+systemctl enable snort-startup
+service snort-startup start
 
 #Enabling Snort's built-in rules
 sed -i -e 's/--enable_builtin_rules = true/enable_builtin_rules = true/g' /usr/local/etc/snort/snort.lua
@@ -95,7 +84,6 @@ mv /usr/local/etc/snort/snort2.lua /usr/local/etc/snort/snort.lua
 
 # Modified fast alerts to output to a file by default and limit filesizes to 100MB
 sed -i -e 's/--alert_fast = { }/alert_fast = {\n    file = true,\n    limit = 100,\n}/g' /usr/local/etc/snort/snort.lua
-
 # Setting up Snort user and group
 groupadd snort
 useradd snort -r -s /sbin/nologin -c SNORT_IDS -g snort
@@ -110,20 +98,21 @@ mkdir /var/log/snort
 chmod -R 5775 /var/log/snort
 chown -R snort:snort /var/log/snort
 
-#Creating Snort service for SystemD
-echo "[Unit]" > /lib/systemd/system/snort3.service
-echo "Description=Snort3 NIDS Daemon" >> /lib/systemd/system/snort3.service
-echo "After=syslog.target network.target" >> /lib/systemd/system/snort3.service
-echo "" >> /lib/systemd/system/snort3.service
-echo "[Service]" >> /lib/systemd/system/snort3.service
-echo "Type=simple" >> /lib/systemd/system/snort3.service
-echo "ExecStart=/usr/local/bin/snort -c /usr/local/etc/snort/snort.lua -s 65535 -k none -l /var/log/snort -D -u snort -g snort -i $interface -m 0x1b"  >> /lib/systemd/system/snort3.service
-echo "" >> /lib/systemd/system/snort3.service
-echo "[Install]" >> /lib/systemd/system/snort3.service
-echo "WantedBy=multi-user.target" >> /lib/systemd/system/snort3.service
+#Creating service that disables LRO & GRO as required by Snort
+echo "[Unit]" > /lib/systemd/system/snort-startup.service
+echo "Description=Snort Startup" >> /lib/systemd/system/snort-startup.service
+echo "After=syslog.target network.target" >> /lib/systemd/system/snort-startup.service
+echo "" >> /lib/systemd/system/snort-startup.service
+echo "[Service]" >> /lib/systemd/system/snort-startup.service
+echo "Requires=network.target" >> /lib/systemd/system/snort-startup.service
+echo "Type=simple" >> /lib/systemd/system/snort-startup.service
+echo "ExecStart=/usr/local/bin/snort -q -c /etc/snort/snort.conf -i $interface" >> /lib/systemd/system/snort-startup.service
+echo "" >> /lib/systemd/system/snort-startup.service
+echo "[Install]" >> /lib/systemd/system/snort-startup.service
+echo "WantedBy=multi-user.target" >> /lib/systemd/system/snort-startup.service
 
-systemctl enable snort3
-service snort3 start
+systemctl enable snort-startup
+service snort-startup start
 
 DEBIAN_FRONTEND=noninteractive apt -y install dnsutils
 
