@@ -52,7 +52,6 @@ echo "Requires=network.target" >> /lib/systemd/system/snort-ethtool.service
 echo "Type=oneshot" >> /lib/systemd/system/snort-ethtool.service
 echo "ExecStart=/sbin/ethtool -K $interface gro off" >> /lib/systemd/system/snort-ethtool.service
 echo "ExecStart=/sbin/ethtool -K $interface lro off" >> /lib/systemd/system/snort-ethtool.service
-echo "ExecStart=/usr/local/bin/snort -q -c /etc/snort/snort.conf -i $interface" >> /lib/systemd/system/snort-ethtool.service
 echo "" >> /lib/systemd/system/snort-ethtool.service
 echo "[Install]" >> /lib/systemd/system/snort-ethtool.service
 echo "WantedBy=multi-user.target" >> /lib/systemd/system/snort-ethtool.service
@@ -106,7 +105,8 @@ echo "" >> /lib/systemd/system/snort-startup.service
 echo "[Service]" >> /lib/systemd/system/snort-startup.service
 echo "Requires=network.target" >> /lib/systemd/system/snort-startup.service
 echo "Type=simple" >> /lib/systemd/system/snort-startup.service
-echo "ExecStart=/usr/local/bin/snort -q -c /etc/snort/snort.conf -i $interface" >> /lib/systemd/system/snort-startup.service
+#echo "ExecStart=/usr/local/bin/snort -q -c /etc/snort/snort.conf -i $interface" >> /lib/systemd/system/snort-startup.service
+echo "ExecStart=/usr/sbin/snort -c /etc/snort/snort.conf -s 65535 -k none -l /var/log/snort/ -D -u snort -g snort -i $interface -m 0x1b"  >> /lib/systemd/system/snort-startup.service
 echo "" >> /lib/systemd/system/snort-startup.service
 echo "[Install]" >> /lib/systemd/system/snort-startup.service
 echo "WantedBy=multi-user.target" >> /lib/systemd/system/snort-startup.service
@@ -116,7 +116,7 @@ service snort-startup start
 
 DEBIAN_FRONTEND=noninteractive apt -y install dnsutils
 
-DOMAIN=$(dig @resolver1.opendns.com ANY myip.opendns.com +short)
+DOMAIN=$(dig +short myip.opendns.com @resolver1.opendns.com)
 
 if [ -z "$DOMAIN" ]; then
   echo "Usage: $(basename $0) <domain>"
@@ -129,7 +129,7 @@ fail_if_error() {
   }
 }
 # Generate a passphrase
-sed -i "/RANDFILE/ s/^#*/#/ " /etc/ssl/openssl.cnf #comment out RANDFILE line in ssl.conf
+#sed -i "/RANDFILE/ s/^#*/#/ " /etc/ssl/openssl.cnf #comment out RANDFILE line in ssl.conf
 
 
 export PASSPHRASE=$(head -c 500 /dev/urandom | tr -dc a-z0-9A-Z | head -c 128; echo)
@@ -141,7 +141,7 @@ O=Comp424
 localityName=California
 commonName=$DOMAIN
 organizationalUnitName=424Group
-emailAddress=JordanBradshaw27@.com
+emailAddress=JordanBradshaw27@aol.com
 "
 # Generate the server private key
 openssl genrsa -des3 -out $DOMAIN.key -passout env:PASSPHRASE 2048
@@ -176,7 +176,6 @@ echo "backing up apache cert"
 
 echo "setting VirtualHost in sites-enabled config"
 echo "<VirtualHost *:443>
-        
         ServerAdmin webmaster@localhost
         DocumentRoot /var/www/html
         ServerName $DOMAIN
