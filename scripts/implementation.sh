@@ -56,33 +56,12 @@ echo "" >> /lib/systemd/system/snort-ethtool.service
 echo "[Install]" >> /lib/systemd/system/snort-ethtool.service
 echo "WantedBy=multi-user.target" >> /lib/systemd/system/snort-ethtool.service
 
-
-
-
 #Enabling and starting service
 systemctl enable snort-ethtool
 service snort-ethtool start
 systemctl enable snort-startup
 service snort-startup start
 
-#Enabling Snort's built-in rules
-sed -i -e 's/--enable_builtin_rules = true/enable_builtin_rules = true/g' /usr/local/etc/snort/snort.lua
-
-#Configuring rule defaults
-sed -i -e 's/..\/rules/\/usr\/local\/etc\/snort\/rules/g' /usr/local/etc/snort/snort_defaults.lua
-sed -i -e 's/..\/builtin_rules/\/usr\/local\/etc\/snort\/builtin_rules/g' /usr/local/etc/snort/snort_defaults.lua
-sed -i -e 's/..\/so_rules/\/usr\/local\/etc\/snort\/so_rules/g' /usr/local/etc/snort/snort_defaults.lua
-sed -i -e 's/..\/lists/\/usr\/local\/etc\/snort\/lists/g' /usr/local/etc/snort/snort_defaults.lua
-
-# Including ruleset in ips.include s.t. Snort can detect multiple independent rule files
-echo "" >> /usr/local/etc/snort/rules/local.rules
-echo "include rules/snort3-community.rules" >> /usr/local/etc/snort/rules/ips.include
-echo "include rules/local.rules" >> /usr/local/etc/snort/rules/ips.include
-awk '/\x27snort3-community.rules\x27/ { print; print "    include = RULE_PATH .. \x27/ips.include\x27,"; next }1' /usr/local/etc/snort/snort.lua | tee /usr/local/etc/snort/snort2.lua
-mv /usr/local/etc/snort/snort2.lua /usr/local/etc/snort/snort.lua
-
-# Modified fast alerts to output to a file by default and limit filesizes to 100MB
-sed -i -e 's/--alert_fast = { }/alert_fast = {\n    file = true,\n    limit = 100,\n}/g' /usr/local/etc/snort/snort.lua
 # Setting up Snort user and group
 groupadd snort
 useradd snort -r -s /sbin/nologin -c SNORT_IDS -g snort
@@ -115,7 +94,6 @@ systemctl enable snort-startup
 service snort-startup start
 
 DEBIAN_FRONTEND=noninteractive apt -y install dnsutils
-
 DOMAIN=$(dig +short myip.opendns.com @resolver1.opendns.com)
 
 if [ -z "$DOMAIN" ]; then
@@ -173,8 +151,13 @@ echo "backing up openssl.cnf"
 [[ ! -f /etc/ssl/openssl_backup.cnf ]] && cp /etc/ssl/openssl.cnf /etc/ssl/openssl_backup.cnf
 echo "backing up apache cert"
 [[ ! -f /etc/apache2/sites-enabled/000-default_backup.conf ]] && cp /etc/apache2/sites-enabled/000-default.conf /etc/apache2/sites-enabled/000-default_backup.conf
-
+#enable sslEngine
+a2enmod ssl
 echo "setting VirtualHost in sites-enabled config"
+echo "<VirtualHost *:80>
+        ServerName $DOMAIN
+        Redirect permanent / https://$DOMAIN
+      </VirtualHost>" > /etc/apache2/sites-enabled/000-default.conf
 echo "<VirtualHost *:443>
         ServerAdmin webmaster@localhost
         DocumentRoot /var/www/html
@@ -184,9 +167,6 @@ echo "<VirtualHost *:443>
         SSLCertificateKeyFile certs/$DOMAIN.key
         ErrorLog \${APACHE_LOG_DIR}/error.log
         CustomLog \${APACHE_LOG_DIR}/access.log combined
-      
-</VirtualHost>" > /etc/apache2/sites-enabled/000-default.conf
-#enable sslEngine
-a2enmod ssl
+</VirtualHost>" > /etc/apache2/sites-enabled/default-ssl.conf
 systemctl restart apache2
 
