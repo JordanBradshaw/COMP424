@@ -1,3 +1,6 @@
+<?php
+	include("include/conn.php");
+?>
 <!DOCTYPE html>
 <html>
 
@@ -99,6 +102,7 @@
 										<label for="login_password">Password:</label>
 										<input type="password" name="login_password" class="form-control" id="login_password" required />
 									</div>
+									<a href="forgot_pass.php">Forgot Password</a>
 									<button type="button" class="btn btn-success btn-login-submit">Login</button>
 								</form>
 							</div>
@@ -120,11 +124,11 @@
 						$.post('include/check_user.php', data, function(data, status) {
 							console.log("Submitting Result => Data: " + data + "\nStatus: " + status);
 							if (data == "Username Created") {
+								$.post("testMail.php");
 								window.location = 'save_2fa.php';
 							} else {
 								alert("Failed");
 							}
-
 						});
 					}
 				});
@@ -138,7 +142,6 @@
 							} else {
 								alert("Failed");
 							}
-
 						});
 					}
 				});

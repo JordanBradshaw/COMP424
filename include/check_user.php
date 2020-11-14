@@ -38,6 +38,8 @@ if ($process_name == "user_register") {
                                         $result = mysqli_stmt_get_result($stmt);
                                         if ($row = mysqli_fetch_assoc($result)) {
                                                 $_SESSION['user_id'] = $row['user_id'];
+                                                
+                                               
                                                 exit("Username Created");
                                         }
                                 } else {
@@ -141,3 +143,25 @@ if ($process_name == "save_code") {
                 echo "SQL Fetch Failed";
         }
 }
+
+if ($process_name == "user_recover") {
+        $email = $_POST['recover_email'];
+        $sql = "SELECT * FROM tbl_users WHERE email='$email'";
+        
+        $stmt = mysqli_stmt_init($conn);
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+                exit('SQL Error');
+        }
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        if ($user_row = mysqli_fetch_assoc($result)) {
+                session_destroy();
+                session_start();
+                $_SESSION['security_question'] = $user_row['security_question'];
+                $_SESSION['security_answer'] = $user_row['security_answer'];
+                        exit("Grab Security Success");
+                } else {
+                        exit("Note : Code not matched.");
+                }
+                exit("Failed");
+        }
